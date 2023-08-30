@@ -1,7 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
-const Blog = require("./models/blog");
+
+const blogRoutes = require("./routes/blog");
 
 const app = express();
 
@@ -27,33 +28,10 @@ app.get("/", (req, res) => {
   res.redirect("/blogs");
 });
 
+app.use("/blogs", blogRoutes);
+
 app.get("/about", (req, res) => {
   res.render("about", { title: "About" });
-});
-
-app.get("/blogs", (req, res) => {
-  Blog.find()
-    .sort({ createdAt: -1 })
-    .then((blogs) => {
-      res.render("index", { title: "Home", blogs });
-    })
-    .catch((err) => console.log(err));
-});
-
-app.post("/blogs", (req, res) => {
-  const blog = new Blog(req.body);
-  blog
-    .save()
-    .then(() => {
-      res.redirect("/");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
-app.get("/blogs/create", (req, res) => {
-  res.render("create", { title: "Create a Blog" });
 });
 
 app.use((req, res) => {
